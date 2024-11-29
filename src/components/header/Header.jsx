@@ -1,10 +1,10 @@
-import React,{useState,useEffect} from 'react';
+import React,{useState,useEffect,useCallback} from 'react';
 import {HiOutlineSearch} from "react-icons/hi";
 import {SlMenu} from "react-icons/sl";
 import {VscChromeClose} from "react-icons/vsc";
 import {useNavigate,useLocation} from "react-router-dom";
 import ContentWrapper from "../contentWrapper/ContentWrapper"
-import logo from "../../assets/movieX-log.png"
+import logo from "../../assets/TrailerVerse-logo.png"
 import "./Header.scss"
 
 const Header = () => {
@@ -17,32 +17,31 @@ const Header = () => {
   const location = useLocation();
 
   //location
- //jab bhi page change krege to scroll location same hi rhega page load hone pr top se start ho the write a logic
- useEffect(()=>{
-  window.scrollTo(0,0);
- },[location])
+  //  jab bhi page change krege to scroll location same hi rhega page load hone pr top se start ho the write a logic
+  useEffect(()=>{
+    window.scrollTo(0,0);
+  },[location])
+
   // navbar controls
-  const conrtolNavbar =()=>{
-    // console.log(window.scrollY)
-    if(window.scrollY>200){
-      if(window.scrollY > lastScrollY  && !mobileMenu){
-        setShow("hide")
+  const conrtolNavbar = useCallback(() => {
+    if (window.scrollY > 200) {
+      if (window.scrollY > lastScrollY && !mobileMenu) {
+        setShow("hide");
+      }else{
+        setShow("show");
       }
-      else{
-        setShow("show")
-      }
-    }
-    else{
+    } else {
       setShow("top");
     }
-    setLastScrollY(window.scrollY)
-  }
+    setLastScrollY(window.scrollY);
+  }, [lastScrollY, mobileMenu]);
+
   useEffect(()=>{
     window.addEventListener("scroll",conrtolNavbar);
     return ()=>{
       window.removeEventListener("scroll",conrtolNavbar);
     }
-  },[lastScrollY]);
+  },[conrtolNavbar]);
   
   //mobile menu
   const opensearch = () =>{
@@ -54,14 +53,13 @@ const Header = () => {
    setShowSearch(false)
   }
   const searchQueryHandle = (e) =>{
-    if(e.key === "Enter" && query.length > 0){
+    if(e.key === "Enter" && query.length>0){
      navigate(`/search/${query}`);
      setTimeout(() => {
       setShowSearch(false)
      }, 1000);
     }
    }
-
   //  navigation method for tv show and movies
   const navigationHandler = (type)=>{
     if(type === "movie"){
@@ -72,7 +70,6 @@ const Header = () => {
     }
     setMobileMenu(false)
   }
-
 
   return (
     <header className={`header ${mobileMenu ? "mobileView" :""} ${show}` }>
